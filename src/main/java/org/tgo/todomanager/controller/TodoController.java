@@ -1,8 +1,9 @@
-package org.tgo.todomanager;
+package org.tgo.todomanager.controller;
 
 import java.io.IOException;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.tgo.todomanager.model.Todo;
+import org.tgo.todomanager.repository.TodoRepository;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -23,6 +25,13 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 public class TodoController {
 
 	private static final String BUCKET = "todo-attached-files";
+	
+	private TodoRepository repository;
+	
+	@Autowired
+	public TodoController(TodoRepository repository) {
+		this.repository = repository;
+	}
 
 	@GetMapping
 	public Todo recuperar() {
@@ -40,6 +49,8 @@ public class TodoController {
 				new PutObjectRequest(BUCKET, attachment, anexo.getInputStream(), new ObjectMetadata()));
 
 		todo.setAttachment(attachment);
+		
+		repository.save(todo);
 
 		return ResponseEntity.accepted().body(todo);
 	}
