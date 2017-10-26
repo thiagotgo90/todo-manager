@@ -1,8 +1,21 @@
 package org.tgo.todomanager.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
+
+import org.springframework.data.repository.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.tgo.todomanager.model.Todo;
 
-public interface TodoRepository extends CrudRepository<Todo, Integer> {
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@org.springframework.stereotype.Repository
+public interface TodoRepository extends Repository<Todo, Integer> {
+
+	List<Todo> findAll();
+
+	Todo findById(Integer id);
+
+	@Transactional(propagation = Propagation.REQUIRED)
+	Todo save(Todo todo);
 
 }
